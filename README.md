@@ -1,0 +1,1 @@
+A simple django app using docker compose for testing with CI/CD.
