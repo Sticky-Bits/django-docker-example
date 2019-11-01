@@ -42,3 +42,10 @@ jobs:
   #     # Yarn first?
   #     - run: yarn test
 
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - build
+      - lint-python
+      - backend-test
