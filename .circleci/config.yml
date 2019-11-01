@@ -18,7 +18,7 @@ jobs:
 
   lint-python:
     docker:
-      image: circleci/python:3.7
+      - image: circleci/python:3.7
     steps:
       - run: PYTHON_FILES_CHANGED=$(git diff --name-only ${CIRCLE_SHA1} -- '*.py')
       - run: if [ ! -z ${PYTHON_FILES_CHANGED} ]; then flake8 ${PYTHON_FILES_CHANGED} && isort --check-only ${PYTHON_FILES_CHANGED}; fi;
