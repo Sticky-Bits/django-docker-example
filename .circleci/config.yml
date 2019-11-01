@@ -10,6 +10,8 @@ jobs:
       IMAGE_NAME: 305686791668.dkr.ecr.ap-southeast-2.amazonaws.com/uptick
     steps:
       - checkout
+      - run: ls -al
+      - run: ls -al /
       # DLC?
       # - setup_remote_docker:
       #   docker_layer_caching: true
