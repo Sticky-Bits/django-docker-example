@@ -37,14 +37,13 @@ jobs:
 
 workflows:
   version: 2
-  test:
+  test_and_deploy:
     jobs:
       - backend_test
       - frontend_test
       - lint
-  deploy:
-    jobs:
-      - backend_test
-      - frontend_test
-      - lint
-      - deploy
+      - deploy:
+        requires:
+          - backend_test
+          - frontend_test
+          - lint
