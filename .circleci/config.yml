@@ -17,11 +17,12 @@ jobs:
       - run: docker build -f builds/test/Dockerfile --tag $IMAGE_NAME:$PROJECT
 
   lint-python:
-    image: circleci/python:3.7
-    steps:
-      - run: PYTHON_FILES_CHANGED=$(git diff --name-only ${CIRCLE_SHA1} -- '*.py')
-      - run: if [ ! -z ${PYTHON_FILES_CHANGED} ]; then flake8 ${PYTHON_FILES_CHANGED} && isort --check-only ${PYTHON_FILES_CHANGED}; fi;
-      # Artifacts?
+    docker:
+      image: circleci/python:3.7
+      steps:
+        - run: PYTHON_FILES_CHANGED=$(git diff --name-only ${CIRCLE_SHA1} -- '*.py')
+        - run: if [ ! -z ${PYTHON_FILES_CHANGED} ]; then flake8 ${PYTHON_FILES_CHANGED} && isort --check-only ${PYTHON_FILES_CHANGED}; fi;
+        # Artifacts?
 
   # lint-javascript:
   #   # TODO: Image
