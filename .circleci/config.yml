@@ -33,7 +33,6 @@ jobs:
 
   backend-test:
     machine: true
-    requires: build
     steps:
       - checkout
       - run: docker-compose -f docker-compose.yml run --rm web ./manage.py test
@@ -51,3 +50,5 @@ workflows:
       - build
       - lint-python
       - backend-test
+        requires: 
+          - build
