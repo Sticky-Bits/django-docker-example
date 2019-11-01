@@ -1,35 +1,16 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-#
 version: 2
 jobs:
-  build:
-    machine: true
-    environment:
-      IMAGE_NAME: 305686791668.dkr.ecr.ap-southeast-2.amazonaws.com/uptick
-    steps:
-      - checkout
-      # DLC?
-      # - setup_remote_docker:
-      #   docker_layer_caching: true
-      - run: docker build --tag $IMAGE_NAME:${CIRCLE_SHA1:0:8} .
-
-  lint_python:
+  lint:
     docker:
+      # TODO: Replace with our own CI image
       - image: circleci/python:3.7
     steps:
       - checkout
       - run: PYTHON_FILES_CHANGED=$(git diff --name-only ${CIRCLE_SHA1} -- '*.py')
       - run: if [ ! -z ${PYTHON_FILES_CHANGED} ]; then flake8 ${PYTHON_FILES_CHANGED} && isort --check-only ${PYTHON_FILES_CHANGED}; fi;
+      - run: JS_FILES_CHANGED=$(git diff --name-only ${DRONE_COMMIT_SHA} -- '*.js' '*.jsx')
+      - run: if [ ! -z ${PYTHON_FILES_CHANGED} ]; then eslint ${JS_FILES_CHANGED}; fi;
       # Artifacts?
-
-  # lint-javascript:
-  #   # TODO: Image
-  #   steps:
-  #     - run: JS_FILES_CHANGED=$(git diff --name-only ${DRONE_COMMIT_SHA} -- '*.js' '*.jsx')
-  #     - run: if [ ! -z ${PYTHON_FILES_CHANGED} ]; then eslint ${JS_FILES_CHANGED}; fi;
-  #     # Artifacts?
 
   backend_test:
     docker:
@@ -39,18 +20,31 @@ jobs:
       - checkout
       - run: ./manage.py test
 
-  # frontend-test:
-  #   # TODO: Image
-  #   steps:
-  #     # Yarn first?
-  #     - run: yarn test
+  frontend_test:
+    docker:
+      # TODO: Replace with our own CI image
+      - image: circleci/python:3.7
+    steps:
+      # Yarn first?
+      - run: yarn test
+
+  deploy:
+    docker:
+      # TODO: Replace with our own CI image
+      - image: circleci/python:3.7
+    steps:
+      - run: echo "To be continued..."
 
 workflows:
   version: 2
-  build_and_test:
+  test:
     jobs:
-      - build
-      - backend_test:
-          requires:
-            - build
-      - lint_python
+      - backend_test
+      - frontend_test
+      - lint
+  deploy:
+    jobs:
+      - backend_test
+      - frontend_test
+      - lint
+      - deploy
