@@ -49,6 +49,6 @@ workflows:
     jobs:
       - build
       - lint-python
-      - backend-test
+      - backend-test:
         requires: 
           - build
