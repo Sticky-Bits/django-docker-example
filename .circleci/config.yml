@@ -43,7 +43,7 @@ workflows:
       - frontend_test
       - lint
       - deploy:
-        requires:
-          - backend_test
-          - frontend_test
-          - lint
+          requires:
+            - backend_test
+            - frontend_test
+            - lint
