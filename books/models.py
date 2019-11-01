@@ -1,8 +1,10 @@
 from django.db import models
+from django.db.models import F
+
 
 
 class Book(models.Model):
-    name = models.TextField(max_length=200)
+    name=models.TextField(max_length=200)
     author = models.ForeignKey('books.Author', on_delete=models.CASCADE)
 
     def __str__(self):

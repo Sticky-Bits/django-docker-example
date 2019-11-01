@@ -1,5 +1,5 @@
 from django.test import TestCase
-from books.models import Author, Book
+from books.models import Book, Author
 
 
 class BookTests(TestCase):
