@@ -5,51 +5,40 @@
 version: 2
 jobs:
   build:
-    docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.7
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    working_directory: ~/repo
-
+    machine: true
+    environment:
+      PROJECT: ${CIRCLE_SHA1:0:8}
+      IMAGE_NAME: 305686791668.dkr.ecr.ap-southeast-2.amazonaws.com/uptick
     steps:
       - checkout
+      # DLC?
+      # - setup_remote_docker:
+      #   docker_layer_caching: true
+      - run: docker build -f builds/test/Dockerfile --tag $IMAGE_NAME:$PROJECT
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+  lint-python:
+    image: circleci/python:3.7
+    steps:
+      - run: PYTHON_FILES_CHANGED=$(git diff --name-only ${CIRCLE_SHA1} -- '*.py')
+      - run: if [ ! -z ${PYTHON_FILES_CHANGED} ]; then flake8 ${PYTHON_FILES_CHANGED} && isort --check-only ${PYTHON_FILES_CHANGED}; fi;
+      # Artifacts?
 
-      - run:
-          name: install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
+  # lint-javascript:
+  #   # TODO: Image
+  #   steps:
+  #     - run: JS_FILES_CHANGED=$(git diff --name-only ${DRONE_COMMIT_SHA} -- '*.js' '*.jsx')
+  #     - run: if [ ! -z ${PYTHON_FILES_CHANGED} ]; then eslint ${JS_FILES_CHANGED}; fi;
+  #     # Artifacts?
 
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+  backend-test:
+    machine: true
+    requires: build
+    steps:
+      - run: docker-compose -f docker-compose.yml run --rm web ./manage.py test
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
-      - run:
-          name: run tests
-          command: |
-            . venv/bin/activate
-            python manage.py test
+  # frontend-test:
+  #   # TODO: Image
+  #   steps:
+  #     # Yarn first?
+  #     - run: yarn test
 
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
