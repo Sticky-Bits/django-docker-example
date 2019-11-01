@@ -13,11 +13,11 @@ jobs:
       # Artifacts?
 
   backend_test:
-    docker:
-     - image: 305686791668.dkr.ecr.ap-southeast-2.amazonaws.com/uptick:${CIRCLE_SHA1:0:8}
+    machine: true
+    # DLC?
     steps:
       - checkout
-      - run: ./manage.py test
+      - run: docker-compose run web ./manage.py test
 
   frontend_test:
     docker:
