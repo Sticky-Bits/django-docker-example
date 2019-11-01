@@ -32,10 +32,12 @@ jobs:
   #     # Artifacts?
 
   backend_test:
-    machine: true
+    docker:
+     - image:
+      305686791668.dkr.ecr.ap-southeast-2.amazonaws.com/uptick:${CIRCLE_SHA1:0:8}
     steps:
       - checkout
-      - run: docker-compose -f docker-compose.yml run --rm web ./manage.py test
+      - run: ./manage.py test
 
   # frontend-test:
   #   # TODO: Image
