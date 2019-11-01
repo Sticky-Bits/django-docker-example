@@ -7,14 +7,13 @@ jobs:
   build:
     machine: true
     environment:
-      PROJECT: ${CIRCLE_SHA1:0:8}
       IMAGE_NAME: 305686791668.dkr.ecr.ap-southeast-2.amazonaws.com/uptick
     steps:
       - checkout
       # DLC?
       # - setup_remote_docker:
       #   docker_layer_caching: true
-      - run: docker build -f builds/test/Dockerfile --tag $IMAGE_NAME:$PROJECT
+      - run: docker build -f builds/test/Dockerfile --tag $IMAGE_NAME:${CIRCLE_SHA1:0:8}
 
   lint-python:
     docker:
